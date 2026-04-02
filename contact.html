@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARX Lab | Contact</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&family=Playfair+Display:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<div class="site-shell">
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="index.html">
+        <div class="brand-mark"><span>ARX</span></div>
+        <div class="brand-copy"><strong>ARX Lab</strong><small>Autonomous, Resilient &amp; Xpressive Systems</small></div>
+      </a>
+      <div class="nav">
+        <nav class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="research.html">Research</a>
+          <a class="active" href="contact.html">Contact</a>
+        </nav>
+        <button class="theme-toggle" data-theme-toggle type="button"><span data-theme-label>Dark</span> Mode</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero" style="padding-bottom:48px;">
+    <div class="container hero-grid">
+      <div class="reveal">
+        <div class="kicker">Connect with ARX</div>
+        <h1>A contact page that feels more like a <span class="outline">professional studio</span> than a default form.</h1>
+        <p class="lead">Your original page already included a collaboration oriented contact section with email, profile links, and a message form. This version turns that into a cleaner, more publishable layout. fileciteturn2file0</p>
+      </div>
+      <aside class="hero-card reveal">
+        <h3>Recommended next edits</h3>
+        <p>Replace the placeholders with your university email, actual profile links, headshot, and a short PI bio. The page architecture is ready for that content.</p>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container contact-grid">
+      <article class="contact-card reveal">
+        <div class="section-kicker">Contact channels</div>
+        <h2 class="section-title" style="font-size:clamp(2rem,4vw,3.3rem);margin:10px 0 14px;">Let’s build together.</h2>
+        <p class="section-copy">Use dark mode when this page is part of your public facing lab identity. Use bright mode when sending the page to faculty, search committees, or prospective students who will read for a longer time.</p>
+        <div class="contact-list">
+          <a class="contact-item" href="mailto:pi@university.edu"><div><strong>Email</strong><span>pi@university.edu</span></div><span>↗</span></a>
+          <a class="contact-item" href="#"><div><strong>Google Scholar</strong><span>Add your scholar profile</span></div><span>↗</span></a>
+          <a class="contact-item" href="#"><div><strong>LinkedIn</strong><span>Add your academic profile</span></div><span>↗</span></a>
+          <a class="contact-item" href="#"><div><strong>ResearchGate</strong><span>Add your research page</span></div><span>↗</span></a>
+        </div>
+      </article>
+
+      <article class="form-card reveal">
+        <div class="section-kicker">Inquiry form</div>
+        <h3 style="font-size:2rem;margin-top:8px;">Send a message</h3>
+        <p>Keep this as a visual form for now, or later connect it to Formspree, Netlify Forms, Basin, or your university CMS form handler.</p>
+        <form class="form-grid" onsubmit="return false;">
+          <div class="form-grid two">
+            <label><small>Name</small><input type="text" placeholder="Your full name"></label>
+            <label><small>Email</small><input type="email" placeholder="name@email.com"></label>
+          </div>
+          <label><small>I am a</small>
+            <select>
+              <option>Select one</option>
+              <option>Prospective Graduate Student</option>
+              <option>Industry Partner</option>
+              <option>Fellow Researcher</option>
+              <option>Undergraduate Student</option>
+              <option>Other</option>
+            </select>
+          </label>
+          <label><small>Message</small><textarea placeholder="Tell the lab about your interests, background, or collaboration idea."></textarea></label>
+          <div>
+            <button class="btn" type="submit">Send message</button>
+            <div class="form-note">Static demo form. Hook it to a backend or service when you deploy.</div>
+          </div>
+        </form>
+      </article>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-copy">ARX Lab · Contact page</div>
+      <div class="footer-copy">Professional layout for recruitment and collaboration</div>
+    </div>
+  </footer>
+</div>
+<script src="assets/app.js"></script>
+</body>
+</html>
