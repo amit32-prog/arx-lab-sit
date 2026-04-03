@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ARX Lab — News</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#080b0e;--paper:#f4efe6;--amber:#b8860b;--amber2:#d4a520;--ember:#8b2500;--ember2:#c03a00;--slate:#1c2b3a;--fog:#6b7a8d;--serif:'Cormorant Garamond',Georgia,serif;--display:'Playfair Display',Georgia,serif;--mono:'DM Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:var(--serif);overflow-x:hidden;cursor:none}
+#cur{position:fixed;width:8px;height:8px;background:var(--amber);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .2s,height .2s}
+#ring{position:fixed;width:36px;height:36px;border:1px solid rgba(184,134,11,.4);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:all .12s ease-out}
+#bgCanvas{position:fixed;inset:0;z-index:0;opacity:.38}
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;justify-content:space-between;align-items:center;padding:1.8rem 5vw}
+nav::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,11,14,.9) 0%,transparent 100%);z-index:-1;pointer-events:none}
+.nav-logo{font-family:var(--display);font-size:1.4rem;font-weight:700;font-style:italic;color:var(--paper);text-decoration:none}
+.nav-logo b{color:var(--amber);font-style:normal}
+nav ul{list-style:none;display:flex;gap:2.8rem}
+nav a{font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,239,230,.45);text-decoration:none;transition:color .2s;position:relative}
+nav a:hover{color:var(--amber)}
+nav a.active{color:var(--amber)}
+nav a.active::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--amber)}
+.wrap{position:relative;z-index:10}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .85s ease,transform .85s ease}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}.d5{transition-delay:.4s}
+footer{position:relative;z-index:10;padding:2.5rem 5vw;border-top:1px solid rgba(244,239,230,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.f-brand{font-family:var(--display);font-style:italic;font-size:1.15rem;font-weight:700;color:var(--amber)}
+.f-copy{font-family:var(--mono);font-size:.56rem;letter-spacing:.18em;color:var(--fog)}
+.divider{display:flex;align-items:center;gap:2rem;padding:0 5vw;margin:3rem 0;position:relative;z-index:10}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(184,134,11,.25),transparent)}
+.div-label{font-family:var(--mono);font-size:.55rem;letter-spacing:.42em;text-transform:uppercase;color:rgba(184,134,11,.45);white-space:nowrap}
+.sec-eye{font-family:var(--mono);font-size:.58rem;letter-spacing:.38em;text-transform:uppercase;color:var(--amber);margin-bottom:1.2rem}
+.sec-head{font-family:var(--display);font-weight:700;font-size:clamp(2.8rem,4.5vw,5rem);line-height:.92;color:var(--paper);margin-bottom:2.5rem}
+.sec-head em{font-style:italic;color:transparent;-webkit-text-stroke:1.5px var(--amber)}
+
+/* PAGE HERO */
+.page-hero{padding:14rem 5vw 5rem;position:relative;overflow:hidden}
+.page-hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,rgba(28,43,58,.18) 0%,transparent 60%);pointer-events:none}
+.page-tag{font-family:var(--mono);font-size:.6rem;letter-spacing:.42em;text-transform:uppercase;color:var(--amber);margin-bottom:1.5rem}
+.page-title{font-family:var(--display);font-weight:900;font-size:clamp(3.5rem,8vw,9rem);line-height:.88;letter-spacing:-.02em;color:var(--paper)}
+.page-title .ghost{color:transparent;-webkit-text-stroke:1px rgba(244,239,230,.2);font-style:italic}
+.page-title .amber{color:var(--amber);font-style:italic}
+.page-sub{font-family:var(--display);font-style:italic;font-size:clamp(1rem,1.8vw,1.4rem);color:rgba(244,239,230,.42);margin-top:1.4rem;max-width:600px;line-height:1.6}
+.page-num{position:absolute;right:5vw;bottom:3rem;font-family:var(--display);font-size:20vw;font-weight:900;color:rgba(244,239,230,.018);line-height:1;pointer-events:none}
+
+/* NEWS SECTION */
+#news{padding:5rem 5vw 8rem}
+.news-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(380px, 1fr)); gap:2.4rem; margin-top:4rem}
+.news-card{background:var(--ink);padding:2.4rem 2.2rem;border:1px solid rgba(184,134,11,.08);transition:all .35s ease;position:relative;overflow:hidden}
+.news-card:hover{background:#0e151d;border-color:rgba(184,134,11,.25);transform:translateY(-6px)}
+.news-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ember2),var(--amber));transform:scaleX(0);transform-origin:left;transition:transform .5s ease}
+.news-card:hover::before{transform:scaleX(1)}
+
+.news-date{font-family:var(--mono);font-size:.58rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(244,239,230,.45);margin-bottom:.7rem}
+.news-category{font-family:var(--mono);font-size:.52rem;letter-spacing:.32em;text-transform:uppercase;color:var(--amber);margin-bottom:1.2rem;display:inline-block;padding:.15rem .8rem;border:1px solid rgba(184,134,11,.25)}
+.news-title{font-family:var(--display);font-size:1.38rem;line-height:1.28;font-weight:700;color:var(--paper);margin-bottom:1.1rem}
+.news-excerpt{font-size:1.02rem;line-height:1.78;color:rgba(244,239,230,.62);margin-bottom:1.8rem;font-weight:300}
+.news-link{font-family:var(--mono);font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);text-decoration:none;transition:color .2s}
+.news-link:hover{color:var(--paper)}
+
+@media(max-width:900px){
+  nav ul{display:none}
+  .page-title{font-size:3.2rem}
+  .news-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="cur"></div><div id="ring"></div>
+<canvas id="bgCanvas"></canvas>
+
+<nav class="wrap">
+  <a href="index.html" class="nav-logo">A<b>R</b>X <span style="font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;color:rgba(244,239,230,.22);font-style:normal;font-weight:300">LAB</span></a>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="research.html">Research</a></li>
+    <li><a href="people.html">People</a></li>
+    <li><a href="publications.html">Publications</a></li>
+    <li><a href="news.html" class="active">News</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="page-hero wrap">
+  <div class="page-hero-bg"></div>
+  <div class="page-tag">ARX Lab · Updates &amp; Highlights</div>
+  <h1 class="page-title">Latest <span class="amber">News</span><br><span class="ghost">from the Lab</span></h1>
+  <div class="page-sub">Recent achievements, publications, events, and milestones from ARX Lab.</div>
+  <div class="page-num">N</div>
+</section>
+
+<div class="divider wrap"><span class="div-label">§ I — Recent Updates</span></div>
+
+<section id="news" class="wrap">
+  <div class="sec-eye rv">What's New</div>
+  <h2 class="sec-head rv">News <em>&amp; Highlights</em></h2>
+  
+  <div class="news-grid">
+    
+    <!-- Example News Item 1 -->
+    <div class="news-card rv">
+      <div class="news-date">March 28, 2026</div>
+      <div class="news-category">Conference</div>
+      <h3 class="news-title">ARX Lab to present at ASCE Construction Research Congress 2026</h3>
+      <p class="news-excerpt">Two papers accepted — one on human-robot collaboration safety and another on real-time physiological monitoring for construction workers.</p>
+      <a href="#" class="news-link">Read more →</a>
+    </div>
+
+    <!-- Example News Item 2 -->
+    <div class="news-card rv d1">
+      <div class="news-date">February 15, 2026</div>
+      <div class="news-category">Award</div>
+      <h3 class="news-title">Prof. [Your Name] receives NSF CAREER Award</h3>
+      <p class="news-excerpt">The lab has been awarded a prestigious NSF CAREER grant to develop intelligent wearable systems for enhancing worker safety in dynamic construction environments.</p>
+      <a href="#" class="news-link">Read announcement →</a>
+    </div>
+
+    <!-- Example News Item 3 -->
+    <div class="news-card rv d2">
+      <div class="news-date">January 20, 2026</div>
+      <div class="news-category">Publication</div>
+      <h3 class="news-title">New paper published in Automation in Construction</h3>
+      <p class="news-excerpt">Our latest study on immersive XR platforms for robotics training demonstrates significant improvements in skill acquisition for construction students.</p>
+      <a href="#" class="news-link">View paper →</a>
+    </div>
+
+    <!-- Example News Item 4 -->
+    <div class="news-card rv d3">
+      <div class="news-date">December 10, 2025</div>
+      <div class="news-category">Lab News</div>
+      <h3 class="news-title">Welcome new Ph.D. student — Sarah Chen</h3>
+      <p class="news-excerpt">Sarah joins the lab with a background in mechanical engineering and will focus on adaptive control systems for wearable robots in construction.</p>
+      <a href="people.html" class="news-link">Meet the team →</a>
+    </div>
+
+  </div>
+
+  <div style="text-align:center; margin-top:5rem;">
+    <a href="#" class="btn" style="font-family:var(--mono);font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;padding:.9rem 2.5rem;background:transparent;border:1px solid rgba(244,239,230,.25);color:rgba(244,239,230,.7);text-decoration:none;transition:all .3s;">View All Archives</a>
+  </div>
+</section>
+
+<footer class="wrap">
+  <div class="f-brand">ARX Lab</div>
+  <div class="f-copy">© 2025 · Autonomous, Resilient &amp; Xpressive Systems · Civil Engineering</div>
+  <a href="contact.html" class="f-copy" style="color:var(--amber);opacity:.5;text-decoration:none">Contact Us →</a>
+</footer>
+
+<script>
+const cur=document.getElementById('cur'),ring=document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function ac(){cur.style.left=mx+'px';cur.style.top=my+'px';rx+=(mx-rx)*.13;ry+=(my-ry)*.13;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(ac)})();
+
+const cv=document.getElementById('bgCanvas'),cx=cv.getContext('2d');
+let W,H,t=0,nodes=[],particles=[];
+function rsz(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;
+  nodes=Array.from({length:6},(_,i)=>{const a=(i/6)*Math.PI*2-Math.PI/2,r=Math.min(W,H)*.31;return{x:W/2+Math.cos(a)*r,y:H/2+Math.sin(a)*r,ox:W/2+Math.cos(a)*r,oy:H/2+Math.sin(a)*r,vx:(Math.random()-.5)*.1,vy:(Math.random()-.5)*.1}});
+  particles=Array.from({length:65},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,sz:Math.random()*1.3+.3,al:Math.random()*.28+.04}))}
+window.addEventListener('resize',rsz);rsz();
+
+function frame(){cx.clearRect(0,0,W,H);t+=.003;
+  nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;n.vx+=(n.ox-n.x)*.0008;n.vy+=(n.oy-n.y)*.0008;n.vx*=.996;n.vy*=.996});
+  for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const dx=nodes[j].x-nodes[i].x,dy=nodes[j].y-nodes[i].y,d=Math.sqrt(dx*dx+dy*dy),m=Math.min(W,H)*.68;if(d<m){cx.beginPath();cx.moveTo(nodes[i].x,nodes[i].y);cx.lineTo(nodes[j].x,nodes[j].y);cx.strokeStyle=`rgba(184,134,11,${(1-d/m)*.09})`;cx.lineWidth=.5;cx.stroke()}}
+  nodes.forEach((n,i)=>{const p=Math.sin(t*1.3+i*1.05)*.5+.5;cx.beginPath();cx.arc(n.x,n.y,2.5+p*2,0,Math.PI*2);cx.fillStyle=`rgba(184,134,11,${.15+p*.25})`;cx.fill()});
+  particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;cx.beginPath();cx.arc(p.x,p.y,p.sz,0,Math.PI*2);cx.fillStyle=`rgba(184,134,11,${p.al})`;cx.fill()});
+  requestAnimationFrame(frame)}
+frame();
+
+const rvEls=document.querySelectorAll('.rv');
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.08,rootMargin:'0px 0px -45px 0px'});
+rvEls.forEach(el=>io.observe(el));
+
+window.addEventListener('load',()=>{['.page-tag','.page-title','.page-sub'].forEach((s,i)=>{const el=document.querySelector(s);if(!el)return;el.style.cssText=`opacity:0;transform:translateY(35px);transition:opacity 1s ease ${.2+i*.15}s,transform 1s ease ${.2+i*.15}s`;requestAnimationFrame(()=>{el.style.opacity=1;el.style.transform='none'})})});
+</script>
+</body>
+</html>
