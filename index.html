@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ARX Lab — Home</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#080b0e;--paper:#f4efe6;--amber:#b8860b;--amber2:#d4a520;--ember:#8b2500;--ember2:#c03a00;--slate:#1c2b3a;--fog:#6b7a8d;--serif:'Cormorant Garamond',Georgia,serif;--display:'Playfair Display',Georgia,serif;--mono:'DM Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:var(--serif);overflow-x:hidden;cursor:none}
+#cur{position:fixed;width:8px;height:8px;background:var(--amber);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .2s,height .2s}
+#ring{position:fixed;width:36px;height:36px;border:1px solid rgba(184,134,11,.4);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:all .12s ease-out}
+#bgCanvas{position:fixed;inset:0;z-index:0;opacity:.45}
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;justify-content:space-between;align-items:center;padding:1.8rem 5vw}
+nav::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,11,14,.9) 0%,transparent 100%);z-index:-1;pointer-events:none}
+.nav-logo{font-family:var(--display);font-size:1.4rem;font-weight:700;font-style:italic;color:var(--paper);text-decoration:none}
+.nav-logo b{color:var(--amber);font-style:normal}
+nav ul{list-style:none;display:flex;gap:2.8rem}
+nav a{font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,239,230,.45);text-decoration:none;transition:color .2s;position:relative}
+nav a:hover{color:var(--amber)}
+nav a.active{color:var(--amber)}
+nav a.active::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--amber)}
+.wrap{position:relative;z-index:10}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .85s ease,transform .85s ease}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}.d5{transition-delay:.4s}
+footer{position:relative;z-index:10;padding:2.5rem 5vw;border-top:1px solid rgba(244,239,230,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.f-brand{font-family:var(--display);font-style:italic;font-size:1.15rem;font-weight:700;color:var(--amber)}
+.f-copy{font-family:var(--mono);font-size:.56rem;letter-spacing:.18em;color:var(--fog)}
+.divider{display:flex;align-items:center;gap:2rem;padding:0 5vw;margin:3rem 0;position:relative;z-index:10}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(184,134,11,.25),transparent)}
+.div-label{font-family:var(--mono);font-size:.55rem;letter-spacing:.42em;text-transform:uppercase;color:rgba(184,134,11,.45);white-space:nowrap}
+.sec-eye{font-family:var(--mono);font-size:.58rem;letter-spacing:.38em;text-transform:uppercase;color:var(--amber);margin-bottom:1.2rem}
+.sec-head{font-family:var(--display);font-weight:700;font-size:clamp(2.8rem,4.5vw,5rem);line-height:.92;color:var(--paper);margin-bottom:2.5rem}
+.sec-head em{font-style:italic;color:transparent;-webkit-text-stroke:1.5px var(--amber)}
+
+/* ── PAGE-SPECIFIC ── */
+#hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 5vw 8vh;overflow:hidden}
+.sigil{position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);width:min(72vw,720px);height:min(72vw,720px);pointer-events:none;z-index:1;opacity:.055;animation:spin 90s linear infinite}
+@keyframes spin{to{transform:translate(-50%,-52%) rotate(360deg)}}
+.hero-inner{position:relative;z-index:10;display:grid;grid-template-columns:1fr 300px;gap:4rem;align-items:flex-end}
+.hero-over{font-family:var(--mono);font-size:.6rem;letter-spacing:.42em;text-transform:uppercase;color:var(--amber);margin-bottom:1.6rem}
+.hero-h1{font-family:var(--display);font-weight:900;font-size:clamp(4rem,11.5vw,12rem);line-height:.86;letter-spacing:-.025em;color:var(--paper)}
+.hg{color:transparent;-webkit-text-stroke:1px rgba(244,239,230,.18)}
+.ha{color:var(--amber);font-style:italic}
+.hero-sub{font-family:var(--display);font-style:italic;font-size:clamp(.95rem,2vw,1.55rem);color:rgba(244,239,230,.38);margin-top:1.4rem;letter-spacing:.01em}
+.hero-aside{padding-bottom:.4rem;border-left:1px solid rgba(184,134,11,.35);padding-left:1.4rem}
+.hero-aside p{font-family:var(--serif);font-style:italic;font-size:.88rem;line-height:1.85;color:rgba(244,239,230,.42)}
+.scroll-cue{position:absolute;bottom:3.5vh;left:50%;transform:translateX(-50%);z-index:10;display:flex;flex-direction:column;align-items:center;gap:.5rem}
+.scroll-cue span{font-family:var(--mono);font-size:.52rem;letter-spacing:.35em;text-transform:uppercase;color:rgba(244,239,230,.2)}
+.sc-ln{width:1px;height:52px;background:linear-gradient(to bottom,var(--amber),transparent);animation:scP 2.2s ease-in-out infinite}
+@keyframes scP{0%,100%{opacity:.25;transform:scaleY(1)}50%{opacity:.7;transform:scaleY(1.15)}}
+
+/* INTRO STRIP */
+#intro{padding:6rem 5vw;display:grid;grid-template-columns:1fr 1fr;gap:7rem;align-items:center}
+.intro-quote{font-family:var(--display);font-size:clamp(1.6rem,2.8vw,2.6rem);font-style:italic;font-weight:300;line-height:1.35;color:var(--paper);border-left:2px solid var(--amber);padding-left:2rem}
+.intro-quote strong{font-weight:700;font-style:normal;color:var(--amber)}
+.intro-body p{font-size:1.04rem;line-height:1.9;color:rgba(244,239,230,.65);font-weight:300;margin-bottom:1.3rem}
+.intro-body strong{color:var(--paper);font-weight:400}
+
+/* THRUSTS */
+#thrusts{padding:0 5vw 7rem}
+.thrusts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(184,134,11,.07);margin-top:4rem}
+.thrust{background:var(--ink);padding:3.2rem 2.5rem;position:relative;overflow:hidden;transition:background .35s;cursor:default}
+.thrust:hover{background:#111820}
+.t-num{font-family:var(--display);font-size:5.5rem;font-weight:900;line-height:1;color:transparent;-webkit-text-stroke:1px rgba(184,134,11,.1);margin-bottom:1.3rem;display:block;transition:-webkit-text-stroke .35s}
+.thrust:hover .t-num{-webkit-text-stroke:1px rgba(184,134,11,.28)}
+.t-name{font-family:var(--display);font-size:1.32rem;font-weight:600;color:var(--paper);line-height:1.25;margin-bottom:.85rem}
+.t-name em{color:var(--amber);font-style:italic}
+.t-desc{font-size:.86rem;line-height:1.82;color:rgba(244,239,230,.48);font-weight:300}
+.t-bar{position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--ember2),var(--amber));transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+.thrust:hover .t-bar{transform:scaleX(1)}
+
+/* GLIMPSE FUTURES */
+#futures-glimpse{padding:5rem 5vw 7rem;background:linear-gradient(180deg,transparent,rgba(28,43,58,.12),transparent)}
+.fglimpse-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:rgba(244,239,230,.04);margin-top:4rem}
+.fg-card{background:var(--ink);padding:2rem 1.6rem;position:relative;transition:background .3s;cursor:default}
+.fg-card:hover{background:#0e151d}
+.fg-n{font-family:var(--display);font-size:2.8rem;font-weight:900;font-style:italic;color:transparent;-webkit-text-stroke:1px rgba(184,134,11,.2);line-height:1;margin-bottom:1rem;transition:-webkit-text-stroke .3s}
+.fg-card:hover .fg-n{-webkit-text-stroke:1px var(--amber)}
+.fg-title{font-family:var(--display);font-size:1rem;font-weight:600;color:var(--paper);line-height:1.3;margin-bottom:.6rem}
+.fg-tag{font-family:var(--mono);font-size:.52rem;letter-spacing:.22em;text-transform:uppercase;color:var(--ember2);border:1px solid rgba(192,58,0,.22);padding:.25rem .6rem;display:inline-block;margin-top:.8rem}
+.fg-bar{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--ember2),var(--amber));transform:scaleX(0);transform-origin:left;transition:transform .4s}
+.fg-card:hover .fg-bar{transform:scaleX(1)}
+
+/* CTA */
+#cta{padding:5rem 5vw 8rem;display:flex;justify-content:space-between;align-items:center;gap:3rem;flex-wrap:wrap;border-top:1px solid rgba(244,239,230,.05)}
+.cta-text h2{font-family:var(--display);font-size:clamp(2rem,4vw,4rem);font-weight:900;line-height:.95;color:var(--paper)}
+.cta-text h2 em{color:var(--amber);font-style:italic}
+.cta-btns{display:flex;gap:1.2rem;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;padding:.9rem 2.2rem;text-decoration:none;position:relative;overflow:hidden;transition:all .28s;display:inline-block}
+.btn-filled{background:var(--amber);color:var(--ink);border:1px solid var(--amber)}
+.btn-filled:hover{background:transparent;color:var(--amber)}
+.btn-ghost{background:transparent;color:rgba(244,239,230,.6);border:1px solid rgba(244,239,230,.18)}
+.btn-ghost:hover{color:var(--paper);border-color:rgba(244,239,230,.5)}
+
+@media(max-width:900px){
+  nav ul{display:none}
+  .hero-inner{grid-template-columns:1fr}
+  .hero-aside{display:none}
+  .hero-h1{font-size:3.8rem}
+  #intro{grid-template-columns:1fr;padding:4rem 5vw;gap:3rem}
+  .thrusts-grid{grid-template-columns:1fr}
+  .fglimpse-grid{grid-template-columns:repeat(2,1fr)}
+  #cta{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div id="cur"></div><div id="ring"></div>
+<canvas id="bgCanvas"></canvas>
+
+<nav class="wrap">
+  <a href="index.html" class="nav-logo">A<b>R</b>X <span style="font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;color:rgba(244,239,230,.22);font-style:normal;font-weight:300">LAB</span></a>
+  <ul>
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="research.html">Research</a></li>
+    <li><a href="people.html">People</a></li>
+    <li><a href="publications.html">Publications</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero" class="wrap">
+  <svg class="sigil" viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="300" cy="300" r="282" stroke="#b8860b" stroke-width=".5" stroke-dasharray="3 10"/>
+    <circle cx="300" cy="300" r="200" stroke="#b8860b" stroke-width=".5"/>
+    <circle cx="300" cy="300" r="120" stroke="#c03a00" stroke-width=".5" stroke-dasharray="6 5"/>
+    <circle cx="300" cy="300" r="52" stroke="#b8860b" stroke-width="1"/>
+    <line x1="300" y1="18" x2="300" y2="100" stroke="#b8860b" stroke-width=".5"/>
+    <line x1="300" y1="500" x2="300" y2="582" stroke="#b8860b" stroke-width=".5"/>
+    <line x1="18" y1="300" x2="100" y2="300" stroke="#b8860b" stroke-width=".5"/>
+    <line x1="500" y1="300" x2="582" y2="300" stroke="#b8860b" stroke-width=".5"/>
+    <line x1="95" y1="95" x2="152" y2="152" stroke="#b8860b" stroke-width=".5" opacity=".4"/>
+    <line x1="505" y1="95" x2="448" y2="152" stroke="#b8860b" stroke-width=".5" opacity=".4"/>
+    <line x1="95" y1="505" x2="152" y2="448" stroke="#b8860b" stroke-width=".5" opacity=".4"/>
+    <line x1="505" y1="505" x2="448" y2="448" stroke="#b8860b" stroke-width=".5" opacity=".4"/>
+    <circle cx="300" cy="18" r="3.5" fill="#b8860b" opacity=".5"/>
+    <circle cx="300" cy="582" r="3.5" fill="#b8860b" opacity=".5"/>
+    <circle cx="18" cy="300" r="3.5" fill="#b8860b" opacity=".5"/>
+    <circle cx="582" cy="300" r="3.5" fill="#b8860b" opacity=".5"/>
+    <circle cx="95" cy="95" r="2.5" fill="#c03a00" opacity=".4"/>
+    <circle cx="505" cy="95" r="2.5" fill="#c03a00" opacity=".4"/>
+    <circle cx="95" cy="505" r="2.5" fill="#c03a00" opacity=".4"/>
+    <circle cx="505" cy="505" r="2.5" fill="#c03a00" opacity=".4"/>
+    <line x1="300" y1="248" x2="300" y2="352" stroke="#c03a00" stroke-width=".8" opacity=".3"/>
+    <line x1="248" y1="300" x2="352" y2="300" stroke="#c03a00" stroke-width=".8" opacity=".3"/>
+  </svg>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-over">Autonomous · Resilient · Xpressive Systems</div>
+      <h1 class="hero-h1"><span class="hg">A</span>RX<br><span class="ha">Lab</span></h1>
+      <div class="hero-sub">Reimagining automation in construction — where machines learn to build, and builders learn from machines.</div>
+    </div>
+    <div class="hero-aside">
+      <p>Robotics · Artificial Intelligence · Physiological Sensing · Immersive Simulation · Civil Engineering</p>
+    </div>
+  </div>
+  <div class="scroll-cue"><div class="sc-ln"></div><span>Scroll</span></div>
+</section>
+
+<div class="divider wrap"><span class="div-label">§ I — Mission</span></div>
+
+<!-- INTRO -->
+<section id="intro" class="wrap">
+  <div class="intro-quote rv">
+    <strong>"</strong>We build the systems that build the future — autonomously, safely, and at scale.<strong>"</strong>
+  </div>
+  <div class="intro-body">
+    <p class="rv d1">The <strong>ARX Lab</strong> sits at the frontier of civil engineering and intelligent systems. We integrate robotics, AI, physiological sensing, and immersive simulation to transform how infrastructure is conceived, constructed, and maintained.</p>
+    <p class="rv d2">From wearable robots on job sites to generative AI in the classroom, our work spans the full arc of human-centered construction automation — always asking: <strong>how do we make the built environment safer, smarter, and more sustainable?</strong></p>
+    <div class="rv d3" style="margin-top:2rem">
+      <a href="research.html" class="btn btn-filled">Explore Research</a>
+    </div>
+  </div>
+</section>
+
+<div class="divider wrap"><span class="div-label">§ II — Core Research</span></div>
+
+<!-- THREE THRUSTS -->
+<section id="thrusts" class="wrap">
+  <div style="padding:0 5vw">
+    <div class="sec-eye rv">Current Work</div>
+    <h2 class="sec-head rv">Three Core <em>Thrusts</em></h2>
+  </div>
+  <div class="thrusts-grid rv d1">
+    <div class="thrust">
+      <span class="t-num">I</span>
+      <div class="t-name">Robots in <em>Construction</em></div>
+      <div class="t-desc">Integrating autonomous systems into real-world construction. Human-robot collaboration, adaptive task planning, and field-ready low-cost platforms for unstructured, safety-critical environments.</div>
+      <div class="t-bar"></div>
+    </div>
+    <div class="thrust">
+      <span class="t-num">II</span>
+      <div class="t-name">Workplace <em>Safety & Health</em></div>
+      <div class="t-desc">Real-time physiological monitoring using wearable AI to detect fatigue, stress, and risk exposure — enabling proactive safety interventions before incidents occur.</div>
+      <div class="t-bar"></div>
+    </div>
+    <div class="thrust">
+      <span class="t-num">III</span>
+      <div class="t-name">Immersive <em>Education</em></div>
+      <div class="t-desc">Modernizing engineering education through XR environments and intelligent platforms — making complex robotics tactile, visual, and deeply engaging for the future workforce.</div>
+      <div class="t-bar"></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider wrap"><span class="div-label">§ III — Future Directions</span></div>
+
+<!-- 5 FUTURE GLIMPSES -->
+<section id="futures-glimpse" class="wrap">
+  <div style="padding:0 5vw">
+    <div class="sec-eye rv">Looking Forward</div>
+    <h2 class="sec-head rv">Five Research <em>Frontiers</em></h2>
+  </div>
+  <div class="fglimpse-grid rv d1">
+    <div class="fg-card"><div class="fg-bar"></div><div class="fg-n">01</div><div class="fg-title">Adaptive Robots for Collaborative Autonomy</div><span class="fg-tag">Robotics</span></div>
+    <div class="fg-card"><div class="fg-bar"></div><div class="fg-n">02</div><div class="fg-title">Low-Cost Platforms for Hazard Detection</div><span class="fg-tag">Platforms</span></div>
+    <div class="fg-card"><div class="fg-bar"></div><div class="fg-n">03</div><div class="fg-title">3D Concrete Printing with Integrated Sensing</div><span class="fg-tag">Manufacturing</span></div>
+    <div class="fg-card"><div class="fg-bar"></div><div class="fg-n">04</div><div class="fg-title">Supervisory Cyber-Physical-Human Systems</div><span class="fg-tag">Safety</span></div>
+    <div class="fg-card"><div class="fg-bar"></div><div class="fg-n">05</div><div class="fg-title">Generative AI Learning Platforms</div><span class="fg-tag">Education</span></div>
+  </div>
+  <div style="text-align:center;margin-top:3rem"><a href="research.html" class="btn btn-ghost rv d2">Read Full Research Agenda →</a></div>
+</section>
+
+<!-- CTA -->
+<section id="cta" class="wrap">
+  <div class="cta-text">
+    <h2 class="rv">Join Us.<br>Build the <em>Future.</em></h2>
+  </div>
+  <div class="cta-btns rv d1">
+    <a href="people.html" class="btn btn-ghost">Meet the Team</a>
+    <a href="contact.html" class="btn btn-filled">Get in Touch</a>
+  </div>
+</section>
+
+<footer class="wrap">
+  <div class="f-brand">ARX Lab</div>
+  <div class="f-copy">© 2025 · Autonomous, Resilient &amp; Xpressive Systems · Civil Engineering</div>
+  <div class="f-copy" style="color:var(--amber);opacity:.4">Building the Future of Construction</div>
+</footer>
+
+<script>
+const cur=document.getElementById('cur'),ring=document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function ac(){cur.style.left=mx+'px';cur.style.top=my+'px';rx+=(mx-rx)*.13;ry+=(my-ry)*.13;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(ac)})();
+const cv=document.getElementById('bgCanvas'),cx=cv.getContext('2d');
+let W,H,t=0,nodes=[],particles=[];
+function rsz(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;
+  nodes=Array.from({length:6},(_,i)=>{const a=(i/6)*Math.PI*2-Math.PI/2,r=Math.min(W,H)*.31;return{x:W/2+Math.cos(a)*r,y:H/2+Math.sin(a)*r,ox:W/2+Math.cos(a)*r,oy:H/2+Math.sin(a)*r,vx:(Math.random()-.5)*.1,vy:(Math.random()-.5)*.1}});
+  particles=Array.from({length:80},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,sz:Math.random()*1.4+.3,al:Math.random()*.32+.04}));}
+window.addEventListener('resize',rsz);rsz();
+function frame(){cx.clearRect(0,0,W,H);t+=.003;
+  nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;n.vx+=(n.ox-n.x)*.0008;n.vy+=(n.oy-n.y)*.0008;n.vx*=.996;n.vy*=.996});
+  for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const dx=nodes[j].x-nodes[i].x,dy=nodes[j].y-nodes[i].y,d=Math.sqrt(dx*dx+dy*dy),m=Math.min(W,H)*.68;if(d<m){cx.beginPath();cx.moveTo(nodes[i].x,nodes[i].y);cx.lineTo(nodes[j].x,nodes[j].y);cx.strokeStyle=`rgba(184,134,11,${(1-d/m)*.1})`;cx.lineWidth=.5;cx.stroke()}}
+  nodes.forEach((n,i)=>{const p=Math.sin(t*1.3+i*1.05)*.5+.5;cx.beginPath();cx.arc(n.x,n.y,2.5+p*2,0,Math.PI*2);cx.fillStyle=`rgba(184,134,11,${.18+p*.28})`;cx.fill();const g=cx.createRadialGradient(n.x,n.y,0,n.x,n.y,14+p*7);g.addColorStop(0,`rgba(184,134,11,${.05+p*.04})`);g.addColorStop(1,'rgba(184,134,11,0)');cx.beginPath();cx.arc(n.x,n.y,14+p*7,0,Math.PI*2);cx.fillStyle=g;cx.fill()});
+  particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;particles.forEach(q=>{const dx=q.x-p.x,dy=q.y-p.y,d=Math.sqrt(dx*dx+dy*dy);if(d<85&&d>0){cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(q.x,q.y);cx.strokeStyle=`rgba(28,43,58,${(1-d/85)*.16})`;cx.lineWidth=.4;cx.stroke()}});cx.beginPath();cx.arc(p.x,p.y,p.sz,0,Math.PI*2);cx.fillStyle=`rgba(184,134,11,${p.al})`;cx.fill()});
+  requestAnimationFrame(frame)}
+frame();
+const rvEls=document.querySelectorAll('.rv');
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.08,rootMargin:'0px 0px -45px 0px'});
+rvEls.forEach(el=>io.observe(el));
+window.addEventListener('load',()=>{['.hero-over','.hero-h1','.hero-sub','.hero-aside'].forEach((s,i)=>{const el=document.querySelector(s);if(!el)return;el.style.cssText=`opacity:0;transform:translateY(38px);transition:opacity 1.1s ease ${.25+i*.15}s,transform 1.1s ease ${.25+i*.15}s`;requestAnimationFrame(()=>{el.style.opacity=1;el.style.transform='none'})})});
+</script>
+</body>
+</html>

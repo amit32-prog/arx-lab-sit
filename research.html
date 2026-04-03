@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ARX Lab — Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#080b0e;--paper:#f4efe6;--amber:#b8860b;--amber2:#d4a520;--ember:#8b2500;--ember2:#c03a00;--slate:#1c2b3a;--fog:#6b7a8d;--serif:'Cormorant Garamond',Georgia,serif;--display:'Playfair Display',Georgia,serif;--mono:'DM Mono',monospace}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--paper);font-family:var(--serif);overflow-x:hidden;cursor:none}
+#cur{position:fixed;width:8px;height:8px;background:var(--amber);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:width .2s,height .2s}
+#ring{position:fixed;width:36px;height:36px;border:1px solid rgba(184,134,11,.4);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:all .12s ease-out}
+#bgCanvas{position:fixed;inset:0;z-index:0;opacity:.4}
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;justify-content:space-between;align-items:center;padding:1.8rem 5vw}
+nav::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(8,11,14,.9) 0%,transparent 100%);z-index:-1;pointer-events:none}
+.nav-logo{font-family:var(--display);font-size:1.4rem;font-weight:700;font-style:italic;color:var(--paper);text-decoration:none}
+.nav-logo b{color:var(--amber);font-style:normal}
+nav ul{list-style:none;display:flex;gap:2.8rem}
+nav a{font-family:var(--mono);font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(244,239,230,.45);text-decoration:none;transition:color .2s;position:relative}
+nav a:hover{color:var(--amber)}
+nav a.active{color:var(--amber)}
+nav a.active::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:1px;background:var(--amber)}
+.wrap{position:relative;z-index:10}
+.rv{opacity:0;transform:translateY(26px);transition:opacity .85s ease,transform .85s ease}
+.rv.on{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}.d5{transition-delay:.4s}
+footer{position:relative;z-index:10;padding:2.5rem 5vw;border-top:1px solid rgba(244,239,230,.05);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.f-brand{font-family:var(--display);font-style:italic;font-size:1.15rem;font-weight:700;color:var(--amber)}
+.f-copy{font-family:var(--mono);font-size:.56rem;letter-spacing:.18em;color:var(--fog)}
+.divider{display:flex;align-items:center;gap:2rem;padding:0 5vw;margin:3rem 0;position:relative;z-index:10}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(184,134,11,.25),transparent)}
+.div-label{font-family:var(--mono);font-size:.55rem;letter-spacing:.42em;text-transform:uppercase;color:rgba(184,134,11,.45);white-space:nowrap}
+.sec-eye{font-family:var(--mono);font-size:.58rem;letter-spacing:.38em;text-transform:uppercase;color:var(--amber);margin-bottom:1.2rem}
+.sec-head{font-family:var(--display);font-weight:700;font-size:clamp(2.8rem,4.5vw,5rem);line-height:.92;color:var(--paper);margin-bottom:2.5rem}
+.sec-head em{font-style:italic;color:transparent;-webkit-text-stroke:1.5px var(--amber)}
+
+/* PAGE HERO */
+.page-hero{padding:14rem 5vw 5rem;position:relative;overflow:hidden}
+.page-hero-bg{position:absolute;inset:0;background:linear-gradient(135deg,rgba(28,43,58,.18) 0%,transparent 60%);pointer-events:none}
+.page-tag{font-family:var(--mono);font-size:.6rem;letter-spacing:.42em;text-transform:uppercase;color:var(--amber);margin-bottom:1.5rem}
+.page-title{font-family:var(--display);font-weight:900;font-size:clamp(3.5rem,8vw,9rem);line-height:.88;letter-spacing:-.02em;color:var(--paper)}
+.page-title .ghost{color:transparent;-webkit-text-stroke:1px rgba(244,239,230,.2);font-style:italic}
+.page-title .amber{color:var(--amber);font-style:italic}
+.page-sub{font-family:var(--display);font-style:italic;font-size:clamp(1rem,1.8vw,1.4rem);color:rgba(244,239,230,.42);margin-top:1.4rem;max-width:600px;line-height:1.6}
+.page-num{position:absolute;right:5vw;bottom:3rem;font-family:var(--display);font-size:20vw;font-weight:900;color:rgba(244,239,230,.018);line-height:1;pointer-events:none}
+
+/* OVERVIEW */
+#overview{padding:5rem 5vw;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start}
+.ov-body p{font-size:1.04rem;line-height:1.9;color:rgba(244,239,230,.65);font-weight:300;margin-bottom:1.3rem}
+.ov-body strong{color:var(--paper);font-weight:400}
+.ov-tags{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:2rem}
+.pill{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;padding:.3rem .75rem;border:1px solid rgba(184,134,11,.22);color:rgba(184,134,11,.65);background:rgba(184,134,11,.03);transition:all .2s}
+.pill:hover{border-color:var(--amber);color:var(--amber)}
+.ov-stats{display:flex;flex-direction:column;gap:2.5rem}
+.stat-row{border-left:2px solid rgba(184,134,11,.3);padding-left:1.5rem}
+.stat-n{font-family:var(--display);font-size:3.5rem;font-weight:900;color:var(--amber);line-height:1}
+.stat-l{font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(244,239,230,.4);margin-top:.2rem}
+
+/* THRUSTS */
+#thrusts{padding:4rem 5vw 6rem}
+.thrusts-full{display:flex;flex-direction:column;gap:1px;background:rgba(184,134,11,.07);margin-top:4rem}
+.thrust-full{background:var(--ink);display:grid;grid-template-columns:120px 1fr;gap:0;transition:background .35s;cursor:default}
+.thrust-full:hover{background:#0e151d}
+.tf-num{font-family:var(--display);font-size:5rem;font-weight:900;font-style:italic;color:transparent;-webkit-text-stroke:1px rgba(184,134,11,.18);padding:3rem 2.5rem;line-height:1;align-self:start;transition:-webkit-text-stroke .35s}
+.thrust-full:hover .tf-num{-webkit-text-stroke:1px rgba(184,134,11,.4)}
+.tf-content{padding:3rem 3.5rem 3rem 0;border-left:1px solid rgba(184,134,11,.08)}
+.tf-name{font-family:var(--display);font-size:1.7rem;font-weight:700;color:var(--paper);line-height:1.2;margin-bottom:1rem}
+.tf-name em{color:var(--amber);font-style:italic}
+.tf-body{font-size:1rem;line-height:1.88;color:rgba(244,239,230,.6);font-weight:300;max-width:680px}
+.tf-accent{height:2px;background:linear-gradient(90deg,var(--ember2),var(--amber));transform:scaleX(0);transform-origin:left;transition:transform .4s;margin-top:2rem}
+.thrust-full:hover .tf-accent{transform:scaleX(1)}
+
+/* FUTURE DIRECTIONS */
+#future{padding:4rem 5vw 7rem;overflow:hidden;position:relative}
+#future::before{content:'FUTURE';position:absolute;top:2rem;right:2vw;font-family:var(--display);font-size:14vw;font-weight:900;color:rgba(244,239,230,.012);letter-spacing:-.04em;pointer-events:none;line-height:1}
+.fut-list{margin-top:4rem}
+.fut-item{display:grid;grid-template-columns:100px 1fr 140px;gap:3rem;align-items:start;padding:3rem 0;border-bottom:1px solid rgba(244,239,230,.05);position:relative;transition:padding-left .3s;cursor:default}
+.fut-item:first-child{border-top:1px solid rgba(244,239,230,.05)}
+.fut-item::before{content:'';position:absolute;left:-5vw;top:0;bottom:0;width:0;background:linear-gradient(90deg,rgba(184,134,11,.055),transparent);transition:width .4s}
+.fut-item:hover::before{width:calc(100% + 10vw)}
+.fut-item:hover{padding-left:.8rem}
+.fi-num{font-family:var(--display);font-size:3.2rem;font-weight:900;font-style:italic;color:transparent;-webkit-text-stroke:1px rgba(184,134,11,.3);line-height:1;text-align:right;transition:-webkit-text-stroke .3s;padding-top:.3rem}
+.fut-item:hover .fi-num{-webkit-text-stroke:1.5px var(--amber)}
+.fi-title{font-family:var(--display);font-size:1.45rem;font-weight:700;color:var(--paper);line-height:1.2;margin-bottom:.7rem}
+.fi-body{font-size:.9rem;line-height:1.8;color:rgba(244,239,230,.5);font-weight:300}
+.fi-tag{font-family:var(--mono);font-size:.52rem;letter-spacing:.24em;text-transform:uppercase;color:var(--ember2);border:1px solid rgba(192,58,0,.25);padding:.3rem .7rem;text-align:center;white-space:nowrap;align-self:center}
+
+@media(max-width:900px){
+  nav ul{display:none}
+  .page-title{font-size:3.2rem}
+  #overview{grid-template-columns:1fr;gap:3rem;padding:4rem 5vw}
+  .thrusts-full .thrust-full{grid-template-columns:80px 1fr}
+  .tf-content{padding:2.5rem 2rem 2.5rem 0}
+  .fut-item{grid-template-columns:70px 1fr}
+  .fi-tag{display:none}
+  #future::before{display:none}
+}
+</style>
+</head>
+<body>
+<div id="cur"></div><div id="ring"></div>
+<canvas id="bgCanvas"></canvas>
+
+<nav class="wrap">
+  <a href="index.html" class="nav-logo">A<b>R</b>X <span style="font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;color:rgba(244,239,230,.22);font-style:normal;font-weight:300">LAB</span></a>
+  <ul>
+    <li><a href="index.html">Home</a></li>
+    <li><a href="research.html" class="active">Research</a></li>
+    <li><a href="people.html">People</a></li>
+    <li><a href="publications.html">Publications</a></li>
+    <li><a href="contact.html">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="page-hero wrap">
+  <div class="page-hero-bg"></div>
+  <div class="page-tag">ARX Lab · Research Agenda</div>
+  <h1 class="page-title"><span class="ghost">Re</span>search<br><span class="amber">Vision</span></h1>
+  <div class="page-sub">Three active thrusts. Five future frontiers. One mission: reimagine automation in construction.</div>
+  <div class="page-num">R</div>
+</section>
+
+<div class="divider wrap"><span class="div-label">§ I — Overview</span></div>
+
+<section id="overview" class="wrap">
+  <div class="ov-body">
+    <div class="sec-eye rv">Research Mission</div>
+    <h2 class="sec-head rv">Human-<em>Centered</em><br>Automation</h2>
+    <div class="rv d1">
+      <p>Our research aims to <strong>reimagine automation in construction</strong> by integrating robotics, artificial intelligence, physiological sensing, and immersive simulation to create safer job sites, improve worker performance, and enable the efficient and sustainable delivery of infrastructure.</p>
+      <p>We have contributed to a diverse portfolio of projects: developing risk assessment frameworks for wearable robots, prototyping low-cost robotic systems for hazard detection, creating real-time physiological monitoring pipelines, and designing immersive virtual environments for robotics education and workforce training.</p>
+      <p>We plan to build a research program that advances <strong>scalable, intelligent, and human-centered automation for construction</strong> — spanning three current thrusts and five future frontiers.</p>
+    </div>
+    <div class="ov-tags rv d2">
+      <span class="pill">Robotics</span><span class="pill">Artificial Intelligence</span><span class="pill">Physiological Sensing</span><span class="pill">Immersive XR</span><span class="pill">Wearable Tech</span><span class="pill">3D Concrete Printing</span><span class="pill">Human-Robot Collaboration</span><span class="pill">Construction Safety</span><span class="pill">Generative AI</span><span class="pill">Cyber-Physical Systems</span>
+    </div>
+  </div>
+  <div class="ov-stats rv d2">
+    <div class="stat-row"><div class="stat-n">3</div><div class="stat-l">Active Research Thrusts</div></div>
+    <div class="stat-row"><div class="stat-n">5</div><div class="stat-l">Future Research Directions</div></div>
+    <div class="stat-row"><div class="stat-n">4+</div><div class="stat-l">Research Projects Underway</div></div>
+    <div class="stat-row"><div class="stat-n">∞</div><div class="stat-l">Potential for Impact</div></div>
+  </div>
+</section>
+
+<div class="divider wrap"><span class="div-label">§ II — Current Thrusts</span></div>
+
+<section id="thrusts" class="wrap">
+  <div class="sec-eye rv">Active Research</div>
+  <h2 class="sec-head rv">Three Core <em>Thrusts</em></h2>
+  <div class="thrusts-full">
+    <div class="thrust-full rv">
+      <div class="tf-num">I</div>
+      <div class="tf-content">
+        <div class="tf-name">Robots in <em>Construction Workflows</em></div>
+        <div class="tf-body">Integrating autonomous and semi-autonomous robotic systems into real-world construction processes. We develop frameworks for safe human-robot collaboration, adaptive task planning, and field-deployable low-cost robotic platforms that work effectively in unstructured, hazardous job-site environments. Our goal is to reduce worker exposure to danger while preserving the human judgment and craft that construction demands.</div>
+        <div class="tf-accent"></div>
+      </div>
+    </div>
+    <div class="thrust-full rv d1">
+      <div class="tf-num">II</div>
+      <div class="tf-content">
+        <div class="tf-name">Workplace Health &amp; <em>Safety</em></div>
+        <div class="tf-body">Enhancing worker well-being through physiological sensing and AI-driven analytics. We design real-time monitoring pipelines using wearable sensors to detect fatigue, cognitive overload, thermal stress, and biomechanical risk exposure — enabling proactive safety interventions before incidents occur. This thrust bridges occupational health science with embedded computing and machine learning.</div>
+        <div class="tf-accent"></div>
+      </div>
+    </div>
+    <div class="thrust-full rv d2">
+      <div class="tf-num">III</div>
+      <div class="tf-content">
+        <div class="tf-name">Immersive &amp; <em>AI-Enhanced Education</em></div>
+        <div class="tf-body">Modernizing engineering education through virtual reality environments, immersive simulation, and intelligent learning platforms. We train tomorrow's construction workforce using XR-based tools that make complex robotics and automation concepts accessible, engaging, and deeply experiential. This thrust also explores how physiological feedback can personalize learning in real time.</div>
+        <div class="tf-accent"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider wrap"><span class="div-label">§ III — Future Directions</span></div>
+
+<section id="future" class="wrap">
+  <div class="sec-eye rv">Looking Forward</div>
+  <h2 class="sec-head rv">Five Research <em>Frontiers</em></h2>
+  <div class="fut-list">
+    <div class="fut-item rv">
+      <div class="fi-num">01</div>
+      <div>
+        <div class="fi-title">Adaptive Robots for Collaborative Autonomy</div>
+        <div class="fi-body">Developing robots capable of adaptive decision-making during active construction operations — enabling genuine human-robot collaboration on complex, dynamic tasks in cluttered and safety-critical environments. This direction targets real-time replanning, shared autonomy, and trust-calibrated cooperation between human workers and robotic systems.</div>
+      </div>
+      <div class="fi-tag">Robotics</div>
+    </div>
+    <div class="fut-item rv d1">
+      <div class="fi-num">02</div>
+      <div>
+        <div class="fi-title">Low-Cost Robotic Platforms for Hazard Detection</div>
+        <div class="fi-body">Designing accessible robotic platforms — including drones, hexapods, and humanoid robots — tailored for hazard detection and task automation in resource-constrained construction settings globally. The goal is democratizing intelligent safety: making autonomous inspection and monitoring affordable for projects at any scale.</div>
+      </div>
+      <div class="fi-tag">Platforms</div>
+    </div>
+    <div class="fut-item rv d2">
+      <div class="fi-num">03</div>
+      <div>
+        <div class="fi-title">3D Concrete Printing with Integrated Sensing</div>
+        <div class="fi-body">Advancing additive construction through the fusion of real-time material sensing and robotic control — enabling adaptive, high-fidelity concrete printing that responds dynamically to material rheology, environmental conditions, and structural feedback. This work connects advanced manufacturing, materials science, and robotics.</div>
+      </div>
+      <div class="fi-tag">Manufacturing</div>
+    </div>
+    <div class="fut-item rv d3">
+      <div class="fi-num">04</div>
+      <div>
+        <div class="fi-title">Supervisory Cyber-Physical-Human Systems</div>
+        <div class="fi-body">Creating supervisory frameworks that integrate physical sensing, digital models, and human performance data for real-time risk evaluation and proactive, personalized safety feedback on live job sites. This direction extends current physiological monitoring toward comprehensive site-level situational awareness — a digital twin of human health on construction sites.</div>
+      </div>
+      <div class="fi-tag">Safety</div>
+    </div>
+    <div class="fut-item rv d4">
+      <div class="fi-num">05</div>
+      <div>
+        <div class="fi-title">Generative AI–Powered Learning Platforms</div>
+        <div class="fi-body">Building next-generation educational ecosystems that merge immersive simulation, physiological sensing, and intelligent tutoring to deliver personalized, adaptive learning experiences for the construction workforce of the future. These platforms will respond in real time to learner state, adjusting difficulty, pacing, and content using AI — bridging education technology and human-computer interaction.</div>
+      </div>
+      <div class="fi-tag">Education</div>
+    </div>
+  </div>
+</section>
+
+<footer class="wrap">
+  <div class="f-brand">ARX Lab</div>
+  <div class="f-copy">© 2025 · Autonomous, Resilient &amp; Xpressive Systems · Civil Engineering</div>
+  <a href="publications.html" class="f-copy" style="color:var(--amber);opacity:.5;text-decoration:none">View Publications →</a>
+</footer>
+
+<script>
+const cur=document.getElementById('cur'),ring=document.getElementById('ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function ac(){cur.style.left=mx+'px';cur.style.top=my+'px';rx+=(mx-rx)*.13;ry+=(my-ry)*.13;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(ac)})();
+const cv=document.getElementById('bgCanvas'),cx=cv.getContext('2d');
+let W,H,t=0,nodes=[],particles=[];
+function rsz(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;
+  nodes=Array.from({length:6},(_,i)=>{const a=(i/6)*Math.PI*2-Math.PI/2,r=Math.min(W,H)*.31;return{x:W/2+Math.cos(a)*r,y:H/2+Math.sin(a)*r,ox:W/2+Math.cos(a)*r,oy:H/2+Math.sin(a)*r,vx:(Math.random()-.5)*.1,vy:(Math.random()-.5)*.1}});
+  particles=Array.from({length:70},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,sz:Math.random()*1.4+.3,al:Math.random()*.28+.04}))}
+window.addEventListener('resize',rsz);rsz();
+function frame(){cx.clearRect(0,0,W,H);t+=.003;
+  nodes.forEach(n=>{n.x+=n.vx;n.y+=n.vy;n.vx+=(n.ox-n.x)*.0008;n.vy+=(n.oy-n.y)*.0008;n.vx*=.996;n.vy*=.996});
+  for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){const dx=nodes[j].x-nodes[i].x,dy=nodes[j].y-nodes[i].y,d=Math.sqrt(dx*dx+dy*dy),m=Math.min(W,H)*.68;if(d<m){cx.beginPath();cx.moveTo(nodes[i].x,nodes[i].y);cx.lineTo(nodes[j].x,nodes[j].y);cx.strokeStyle=`rgba(184,134,11,${(1-d/m)*.09})`;cx.lineWidth=.5;cx.stroke()}}
+  nodes.forEach((n,i)=>{const p=Math.sin(t*1.3+i*1.05)*.5+.5;cx.beginPath();cx.arc(n.x,n.y,2.5+p*2,0,Math.PI*2);cx.fillStyle=`rgba(184,134,11,${.15+p*.25})`;cx.fill()});
+  particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;cx.beginPath();cx.arc(p.x,p.y,p.sz,0,Math.PI*2);cx.fillStyle=`rgba(184,134,11,${p.al})`;cx.fill()});
+  requestAnimationFrame(frame)}
+frame();
+const rvEls=document.querySelectorAll('.rv');
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.08,rootMargin:'0px 0px -45px 0px'});
+rvEls.forEach(el=>io.observe(el));
+window.addEventListener('load',()=>{['.page-tag','.page-title','.page-sub'].forEach((s,i)=>{const el=document.querySelector(s);if(!el)return;el.style.cssText=`opacity:0;transform:translateY(35px);transition:opacity 1s ease ${.2+i*.15}s,transform 1s ease ${.2+i*.15}s`;requestAnimationFrame(()=>{el.style.opacity=1;el.style.transform='none'})})});
+</script>
+</body>
+</html>
